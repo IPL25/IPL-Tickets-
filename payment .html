@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loan Payment</title>
+  <style>
+    /* Basic Reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f4f7fc;
+      padding: 50px 20px;
+    }
+
+    h1, h2 {
+      color: #333;
+    }
+
+    /* Container Styling */
+    .container {
+      max-width: 700px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 40px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Title Styling */
+    h1 {
+      text-align: center;
+      font-size: 30px;
+      color: #2b3d50;
+      margin-bottom: 20px;
+    }
+
+    h2 {
+      text-align: center;
+      font-size: 22px;
+      margin-bottom: 30px;
+      color: #4CAF50;
+    }
+
+    /* Payment Option Buttons */
+    .payment-option {
+      display: inline-block;
+      margin: 10px;
+      padding: 15px 25px;
+      font-size: 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      background-color: #4CAF50;
+      color: white;
+      border: 2px solid #4CAF50;
+      transition: all 0.3s ease;
+    }
+
+    .payment-option:hover {
+      background-color: #45a049;
+      transform: scale(1.05);
+    }
+
+    .selected {
+      background-color: #45a049;
+    }
+
+    /* Pay Now Button */
+    #pay-now {
+      display: block;
+      width: 100%;
+      padding: 15px;
+      font-size: 20px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 30px;
+      transition: all 0.3s ease;
+    }
+
+    #pay-now:hover {
+      background-color: #0056b3;
+    }
+
+    /* Payment Amount Styling */
+    .amount-info {
+      margin-top: 20px;
+      font-size: 18px;
+      color: #333;
+    }
+
+    /* Media Query for Responsiveness */
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Select Payment Method</h1>
+    <h2 id="amount-display">Amount: ₹0</h2>
+
+    <!-- Payment Options -->
+    <div>
+      <button class="payment-option" data-app="PhonePe">PhonePe</button>
+      <button class="payment-option" data-app="GooglePay">Google Pay</button>
+      <button class="payment-option" data-app="Paytm">Paytm</button>
+      <button class="payment-option" data-app="AadhaarUPI">Aadhaar UPI</button>
+    </div>
+
+    <!-- Amount Info -->
+    <div class="amount-info">
+      Amount to be paid will be automatically filled when you select a payment method.
+    </div>
+
+    <!-- Pay Now Button -->
+    <button id="pay-now">Proceed to Pay</button>
+  </div>
+
+  <script>
+    const amount = localStorage.getItem('paymentAmount') || '2999';  // Dynamic amount fetched from previous page
+    document.getElementById('amount-display').innerText = `Amount: ₹${amount}`;
+
+    let selectedApp = null;
+
+    // Payment Option Selection
+    document.querySelectorAll('.payment-option').forEach(button => {
+      button.addEventListener('click', function() {
+        document.querySelectorAll('.payment-option').forEach(btn => btn.classList.remove('selected'));
+        this.classList.add('selected');
+        selectedApp = this.getAttribute('data-app');
+      });
+    });
+
+    // Pay Now Action
+    document.getElementById('pay-now').addEventListener('click', function() {
+      if (!selectedApp) {
+        alert('Please select a Payment Method first!');
+        return;
+      }
+
+      // UPI Payment Link
+      const upiBase = "upi://pay?ver=01&mode=19&pa=pintukumarmeena992239.rzp@icici&pn=PINTUKUMARMEENA&tr=RZPQMnLWt5rx8uYicqrv2&cu=INR&mc=7941&qrMedium=04&tn=PaymenttoPINTUKUMARMEENA";
+      
+      // Append dynamic amount to UPI link
+      const upiLink = `${upiBase}&am=${amount}`;
+
+      // Redirecting to selected payment app
+      switch (selectedApp) {
+        case 'PhonePe':
+          window.location.href = `phonepe://pay?url=${upiLink}`;
+          break;
+        case 'GooglePay':
+          window.location.href = `upi://pay?pa=pintukumarmeena992239.rzp@icici&pn=PINTUKUMARMEENA&am=${amount}&cu=INR&tn=PaymenttoPINTUKUMARMEENA`;
+          break;
+        case 'Paytm':
+          window.location.href = `paytm://pay?url=${upiLink}`;
+          break;
+        case 'AadhaarUPI':
+          window.location.href = `upi://pay?pa=pintukumarmeena992239.rzp@icici&pn=PINTUKUMARMEENA&am=${amount}&cu=INR&tn=PaymenttoPINTUKUMARMEENA`;
+          break;
+        default:
+          alert('Please select a valid payment method.');
+          break;
+      }
+    });
+  </script>
+
+</body>
+</html>
